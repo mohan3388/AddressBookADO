@@ -7,6 +7,7 @@ namespace AddressBookProblem
     {
         public static void Main(String[] args)
         {
+            AddressBook empservice = new AddressBook();
             Console.WriteLine("Welcome in the Employee Pay Roll Service");
             AddressBook payrollService = new AddressBook();
             bool check = true;
@@ -33,6 +34,13 @@ namespace AddressBookProblem
                         empModel.Email = "Mohan@12gmail.com";
 
                         payrollService.AddContact(empModel);
+                        break;
+                    case 2:
+                        List<AddressBookModel> empList = empservice.GetAllEmployees();
+                        foreach (AddressBookModel data in empList)
+                        {
+                            Console.WriteLine(data.Id + " " + data.FirstName + " " + data.LastName + " " + data.Address + " " + data.City + " " + data.State + " " + data.ZipCode + " " + data.PhoneNumber + " " + data.Email);
+                        }
                         break;
                     case 0:
                         check = false;

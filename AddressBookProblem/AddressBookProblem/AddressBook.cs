@@ -57,5 +57,37 @@ namespace AddressBookProblem
             }
         }
 
+        public List<AddressBookModel> GetAllEmployees()
+        {
+            connection();
+            List<AddressBookModel> EmpList = new List<AddressBookModel>();
+            SqlCommand com = new SqlCommand("spViewContacts", con);
+            com.CommandType = CommandType.StoredProcedure;
+            SqlDataAdapter da = new SqlDataAdapter(com);
+            DataTable dt = new DataTable();
+            con.Open();
+            da.Fill(dt);
+            con.Close();
+            //Bind EmpModel generic list using dataRow     
+            foreach (DataRow dr in dt.Rows)
+            {
+                EmpList.Add(
+                    new AddressBookModel
+                    {
+                        Id = Convert.ToInt32(dr["Id"]),
+                        FirstName = Convert.ToString(dr["FirstName"]),
+                        LastName = Convert.ToString(dr["LastName"]),
+                        Address = Convert.ToString(dr["Address"]),
+                        City = Convert.ToString(dr["City"]),
+                        State = Convert.ToString(dr["State"]),
+                        ZipCode = Convert.ToInt32(dr["ZipCode"]),
+                        PhoneNumber = Convert.ToString(dr["PhoneNumber"]),
+                        Email = Convert.ToString(dr["Email"]),
+                       
+                    }
+                    );
+            }
+            return EmpList;
+        }
     }
 }
