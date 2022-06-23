@@ -10,24 +10,52 @@ namespace AddressBookProblem
 {
     public class AddressBook
     {
-
-        public static string connection = @"Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=AddressBookAdo;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
-        SqlConnection sqlConnection = new SqlConnection(connection);
-
-        public void SetConnection()
+        private SqlConnection con;
+        private void connection()
         {
-            if (sqlConnection != null && sqlConnection.State.Equals(ConnectionState.Closed))
+            string connectingString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=AddressBookAdo;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            con = new SqlConnection(connectingString);
+        }
+        public string AddContact(AddressBookModel obj)
+        {
+            try
             {
-                try
+                connection();
+                SqlCommand com = new SqlCommand("spAddNewPersons", con);
+                com.CommandType = CommandType.StoredProcedure;
+
+                com.Parameters.AddWithValue("@FirstName", obj.FirstName);
+                com.Parameters.AddWithValue("@LastName", obj.LastName);
+                com.Parameters.AddWithValue("@Address", obj.Address);
+                com.Parameters.AddWithValue("@City", obj.City);
+                com.Parameters.AddWithValue("@State", obj.State);
+               
+                com.Parameters.AddWithValue("@ZipCode", obj.ZipCode);
+                com.Parameters.AddWithValue("@PhoneNumber", obj.PhoneNumber);
+                com.Parameters.AddWithValue("@Email", obj.Email);
+
+                
+                con.Open();
+                int i = com.ExecuteNonQuery();
+                con.Close();
+                if (i != 0)
                 {
-                    sqlConnection.Open();
+                    return "data Added";
                 }
-                catch (Exception)
+                else
                 {
-                    throw new CustomException(CustomException.ExceptionType.Connection_Failed, "Connection Failed");
+                    return "data not added";
                 }
             }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                this.con.Close();
+            }
         }
-      
+
     }
 }
