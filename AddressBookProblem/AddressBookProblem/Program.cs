@@ -15,7 +15,7 @@ namespace AddressBookProblem
 
             while (check)
             {
-                Console.WriteLine("1. To Insert the Data in Data Base \n");
+                Console.WriteLine("1. To Insert the Data in Data Base \n2. Retrieve data from databse\n 3.Update COntact Details in Databse");
                 Console.WriteLine("Enter the Above Option");
                 int option = Convert.ToInt32(Console.ReadLine());
                 switch (option)
@@ -41,6 +41,13 @@ namespace AddressBookProblem
                         {
                             Console.WriteLine(data.Id + " " + data.FirstName + " " + data.LastName + " " + data.Address + " " + data.City + " " + data.State + " " + data.ZipCode + " " + data.PhoneNumber + " " + data.Email);
                         }
+                        break;
+                    case 3:
+                        AddressBookModel emp = new AddressBookModel();
+                        emp.Id = 1;
+                       
+                        emp.PhoneNumber = "7847850147";
+                        empservice.UpdateEmp(emp);
                         break;
                     case 0:
                         check = false;

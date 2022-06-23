@@ -89,5 +89,28 @@ namespace AddressBookProblem
             }
             return EmpList;
         }
+        //To Update Emp data   
+        public bool UpdateEmp(AddressBookModel obj)
+        {
+            connection();
+            SqlCommand com = new SqlCommand("SPUpdateDetails", con);
+
+            com.CommandType = CommandType.StoredProcedure;
+            com.Parameters.AddWithValue("@Id", obj.Id);
+            
+            com.Parameters.AddWithValue("@PhoneNumber", obj.PhoneNumber);
+
+            con.Open();
+            int i = com.ExecuteNonQuery();
+            con.Close();
+            if (i >= 1)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
