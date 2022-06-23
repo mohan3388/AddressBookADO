@@ -12,7 +12,7 @@ State varchar(60),
 ZipCode int,
 PhoneNumber Varchar(10),
 Email varchar(150)
-);'
+);
 
 select * from ContactDetails
 
