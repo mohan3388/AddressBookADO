@@ -11,7 +11,7 @@ namespace AddressBookProblem
     public class AddressBook
     {
         private SqlConnection con;
-        private void connection()
+        private void Connection()
         {
             string connectingString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=AddressBookAdo;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
             con = new SqlConnection(connectingString);
@@ -20,7 +20,7 @@ namespace AddressBookProblem
         {
             try
             {
-                connection();
+                Connection();
                 SqlCommand com = new SqlCommand("spAddNewPersons", con);
                 com.CommandType = CommandType.StoredProcedure;
 
@@ -29,12 +29,12 @@ namespace AddressBookProblem
                 com.Parameters.AddWithValue("@Address", obj.Address);
                 com.Parameters.AddWithValue("@City", obj.City);
                 com.Parameters.AddWithValue("@State", obj.State);
-               
+
                 com.Parameters.AddWithValue("@ZipCode", obj.ZipCode);
                 com.Parameters.AddWithValue("@PhoneNumber", obj.PhoneNumber);
                 com.Parameters.AddWithValue("@Email", obj.Email);
 
-                
+
                 con.Open();
                 int i = com.ExecuteNonQuery();
                 con.Close();
@@ -59,7 +59,7 @@ namespace AddressBookProblem
 
         public List<AddressBookModel> GetAllEmployees()
         {
-            connection();
+            Connection();
             List<AddressBookModel> EmpList = new List<AddressBookModel>();
             SqlCommand com = new SqlCommand("spViewContacts", con);
             com.CommandType = CommandType.StoredProcedure;
@@ -83,7 +83,7 @@ namespace AddressBookProblem
                         ZipCode = Convert.ToInt32(dr["ZipCode"]),
                         PhoneNumber = Convert.ToString(dr["PhoneNumber"]),
                         Email = Convert.ToString(dr["Email"]),
-                       
+
                     }
                     );
             }
@@ -92,12 +92,12 @@ namespace AddressBookProblem
         //To Update Emp data   
         public bool UpdateEmp(AddressBookModel obj)
         {
-            connection();
+            Connection();
             SqlCommand com = new SqlCommand("SPUpdateDetails", con);
 
             com.CommandType = CommandType.StoredProcedure;
             com.Parameters.AddWithValue("@Id", obj.Id);
-            
+
             com.Parameters.AddWithValue("@PhoneNumber", obj.PhoneNumber);
 
             con.Open();
@@ -116,7 +116,7 @@ namespace AddressBookProblem
         //Delete details
         public bool DeleteEmployee(int Id)
         {
-            connection();
+            Connection();
             SqlCommand com = new SqlCommand("spDeletePersonById", con);
 
             com.CommandType = CommandType.StoredProcedure;
@@ -133,6 +133,39 @@ namespace AddressBookProblem
             {
                 return false;
             }
+        }
+        //Retrieve Data from City or State
+
+        public string PrintDataBasedOnCity(string City, string State)
+        {
+            string nameList = "";
+            string query = @"select * from AddressBook_Table where City =" + City + " or State=" + State;
+            SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
+            sqlConnection.Open();
+            SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+            if (sqlDataReader.HasRows)
+            {
+                while (sqlDataReader.Read())
+                {
+                    DisplayEmployeeDetails(sqlDataReader);
+                    nameList += sqlDataReader["FirstName"].ToString() + " ";
+                }
+            }
+            return nameList;
+        }
+        Contact Contact = new Contact();
+        public void DisplayEmployeeDetails(SqlDataReader sqlDataReader)
+        {
+
+            Contact.Firstname = Convert.ToString(sqlDataReader["FirstName"]);
+            Contact.Lastname = Convert.ToString(sqlDataReader["LastName"]);
+            Contact.Address = Convert.ToString(sqlDataReader["Address"] + " " + sqlDataReader["City"] + " " + sqlDataReader["State"] + " " + sqlDataReader["zip"]);
+            Contact.PhoneNumber = Convert.ToInt64(sqlDataReader["PhoneNumber"]);
+            Contact.Email = Convert.ToString(sqlDataReader["email"]);
+            Contact.Zip = Convert.ToInt64(sqlDataReader["Zip"]);
+            Contact.Type = Convert.ToString(sqlDataReader["Type"]);
+            Console.WriteLine("{0} \n {1} \n {2} \n {3} \n {4} \n {5} \n {6}", Contact.Firstname, Contact.Lastname, Contact.Address, Contact.PhoneNumber, Contact.Email, Contact.Zip, Contact.Type);
+
         }
     }
 }
