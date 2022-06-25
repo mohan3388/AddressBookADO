@@ -136,36 +136,77 @@ namespace AddressBookProblem
         }
         //Retrieve Data from City or State
 
-        public string PrintDataBasedOnCity(string City, string State)
+        public List<AddressBookModel> RetrieveDataUsingCityName(string City, string State)
+        {
+            Connection();
+            List<AddressBookModel> EmpList = new List<AddressBookModel>();
+            SqlCommand com = new SqlCommand("spViewContactsUsingCityName", con);
+            con.Open();
+            com.CommandType = CommandType.StoredProcedure;
+            com.Parameters.AddWithValue("@City", City);
+            com.Parameters.AddWithValue("@State", State);
+            SqlDataReader da = com.ExecuteReader();
+            DataTable dt = new DataTable();
+           
+           
+            
+            if (da.HasRows)
+            {
+                while(da.Read())
+                {
+                    AddressBookModel emp = new AddressBookModel();
+                    emp.FirstName= da.GetString(1);
+                    emp.LastName = da.GetString(2);
+                    emp.Address = da.GetString(3);
+                    emp.City = da.GetString(4);
+                    emp.State = da.GetString(5);
+                    emp.ZipCode = da.GetInt32(6);
+                    emp.PhoneNumber = da.GetString(7);
+                    emp.Email=da.GetString(8);
+                    List<AddressBookModel> list = new List<AddressBookModel>();
+                    list.Add(emp);
+                    DisplayEmployeeDetails(list);
+                }
+            }
+            con.Close();
+            //Bind EmpModel generic list using dataRow     
+
+            return EmpList;
+        }
+
+      
+        public void DisplayEmployeeDetails(List<AddressBookModel> sqlDataReader)
+        {
+             foreach(AddressBookModel addressBookModel in sqlDataReader)
+            {
+                Console.WriteLine("FirstName: "+addressBookModel.FirstName+" LastName: "+ addressBookModel.LastName+" Address: "+addressBookModel.Address+" City: "+addressBookModel.City+" State: "+addressBookModel.State+" ZipCode "+addressBookModel.ZipCode+" Phone number "+addressBookModel.PhoneNumber+" Email "+addressBookModel.Email);
+            }
+            //Contact.FirstName = Convert.ToString(sqlDataReader["FirstName"]);
+            //Contact.LastName = Convert.ToString(sqlDataReader["LastName"]);
+            //Contact.Address = Convert.ToString(sqlDataReader["Address"] + " " + sqlDataReader["City"] + " " + sqlDataReader["State"] + " " + sqlDataReader["zip"]);
+            //Contact.PhoneNumber = Convert.ToString(sqlDataReader["PhoneNumber"]);
+            //Contact.Email = Convert.ToString(sqlDataReader["email"]);
+            //Contact.ZipCode = Convert.ToInt32(sqlDataReader["ZipCode"]);
+          
+            //Console.WriteLine("{0} \n {1} \n {2} \n {3} \n {4} \n {5} \n {6}", Contact.FirstName, Contact.LastName, Contact.Address, Contact.PhoneNumber, Contact.Email, Contact.ZipCode);
+
+        }
+        public string PrintCountBasedOnCityandState()
         {
             string nameList = "";
-            string query = @"select * from AddressBook_Table where City =" + City + " or State=" + State;
-            SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-            sqlConnection.Open();
+            string query = @"Select Count(*),State,City from ContactDetails Group by State,City";
+            SqlCommand sqlCommand = new SqlCommand(query, con);
+            con.Open();
             SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
             if (sqlDataReader.HasRows)
             {
                 while (sqlDataReader.Read())
                 {
-                    DisplayEmployeeDetails(sqlDataReader);
-                    nameList += sqlDataReader["FirstName"].ToString() + " ";
+                    Console.WriteLine("{0} \t {1} \t {2}", sqlDataReader[0], sqlDataReader[1], sqlDataReader[2]);
+                    nameList += sqlDataReader[0].ToString() + " ";
                 }
             }
             return nameList;
-        }
-        Contact Contact = new Contact();
-        public void DisplayEmployeeDetails(SqlDataReader sqlDataReader)
-        {
-
-            Contact.Firstname = Convert.ToString(sqlDataReader["FirstName"]);
-            Contact.Lastname = Convert.ToString(sqlDataReader["LastName"]);
-            Contact.Address = Convert.ToString(sqlDataReader["Address"] + " " + sqlDataReader["City"] + " " + sqlDataReader["State"] + " " + sqlDataReader["zip"]);
-            Contact.PhoneNumber = Convert.ToInt64(sqlDataReader["PhoneNumber"]);
-            Contact.Email = Convert.ToString(sqlDataReader["email"]);
-            Contact.Zip = Convert.ToInt64(sqlDataReader["Zip"]);
-            Contact.Type = Convert.ToString(sqlDataReader["Type"]);
-            Console.WriteLine("{0} \n {1} \n {2} \n {3} \n {4} \n {5} \n {6}", Contact.Firstname, Contact.Lastname, Contact.Address, Contact.PhoneNumber, Contact.Email, Contact.Zip, Contact.Type);
-
         }
     }
 }
