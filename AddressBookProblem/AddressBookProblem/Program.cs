@@ -13,6 +13,7 @@ namespace AddressBookProblem
             AddressBook empservice = new AddressBook();
             Console.WriteLine("Welcome in the Employee Pay Roll Service");
             AddressBook payrollService = new AddressBook();
+            AddressBookModel empMod = new AddressBookModel();
             bool check = true;
 
 
@@ -81,7 +82,13 @@ namespace AddressBookProblem
                         model.RetrieveDataUsingCityName(City, State);
                         break;
                     case 6:
-                        empservice.PrintCountBasedOnCityandState();
+                        AddressBook cont = new AddressBook();
+                        Console.WriteLine("Enter city and state");
+                        string cityName = Console.ReadLine();
+                        
+                        string stateName = Console.ReadLine();
+                       
+                        cont.CountDataFromCityAndState(empMod);
                         break;
                     case 0:
                         check = false;
